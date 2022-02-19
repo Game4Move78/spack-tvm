@@ -95,12 +95,8 @@ class Tvm(CMakePackage):
     depends_on('ncurses+termlib')
     depends_on('libedit')
     depends_on('libxml2')
+
     depends_on('py-setuptools')
-    depends_on('py-cython')
-    depends_on('py-decorator')
-    depends_on('py-psutil')
-    depends_on('py-scipy')
-    depends_on('py-numpy')
 
     depends_on('cuda@8.0:', when="+cuda")
 
