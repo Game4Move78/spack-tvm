@@ -7,4 +7,4 @@ See:
 https://github.com/llvm/llvm-project/issues/52823
 https://github.com/spack/spack/issues/27992
 
-Resolved by adding `^llvm targets=all ~lldb` or `llvm@12.0.1 targets=all` to the end of spec
+Resolved by adding `^llvm targets=all ~lldb` or `^llvm@12.0.1 targets=all` to the end of spec
