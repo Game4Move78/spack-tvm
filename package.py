@@ -67,7 +67,7 @@ class Tvm(CMakePackage):
             description="Build with C++ RPC runtime enabled")
     variant("ios_rpc",
             default=False,
-            description="Build with C++ RPC runtime enabled")
+            description="Build with iOS RPC runtime enabled")
 
     variant(
         "build_type",
