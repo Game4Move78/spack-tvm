@@ -116,14 +116,15 @@ class Tvm(CMakePackage):
         cmake_args = [
         ]
 
-        if "+cuda" in "spec":
+        if "+cuda" in spec:
             cmake_args.extend([
                 define("USE_CUDA", spec["cuda"].prefix),
+                define("USE_CUDA", True),
                 define("USE_CUBAS", True),
                 define("USE_CUDNN", True)
             ])
 
-        if "+opencl" in "spec":
+        if "+opencl" in spec:
             cmake_args.extend([
                 define("USE_OPENCL", spec["opencl"].prefix),
             ])
@@ -156,6 +157,8 @@ class Tvm(CMakePackage):
             from_variant("USE_LIBBACKTRACE", "libbacktrace"),
             define("INSTALL_DEV", True),
         ])
+        with open("/tmp/cmake.log", "w") as fp:
+            fp.write(str(cmake_args))
         return cmake_args
 
     @run_after("install")
