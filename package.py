@@ -30,6 +30,10 @@ class Tvm(CMakePackage):
 
     variant("cuda",
             default=False, description="Build with CUDA enabled")
+    variant("cudnn",
+            default=False, description="Build with cuDNN support")
+    variant("cublas",
+            default=False, description="Build with cuBLAS support")
     variant("llvm",
             default=True, description="Build with llvm support")
     variant("libbacktrace",
@@ -76,34 +80,37 @@ class Tvm(CMakePackage):
         values=("Debug", "Release", "RelWithDebInfo", "MinSizeRel"),
     )
 
-    depends_on('ninja', type="build")
+    depends_on("ninja", type="build")
 
-    depends_on('llvm targets=all', when="+llvm")
+    depends_on("llvm targets=all", when="+llvm")
 
-    with when('+rocm'):
-        depends_on('rocm-cmake')
-        depends_on('hip')
+    with when("+rocm"):
+        depends_on("rocm-cmake")
+        depends_on("hip")
 
-    depends_on('opencl', when="+opencl")
+    depends_on("opencl", when="+opencl")
 
-    # depends_on('vulkan', when="+vulkan")
+    # depends_on("vulkan", when="+vulkan")
 
-    depends_on('opengl', when="+opengl")
+    depends_on("opengl", when="+opengl")
 
-    depends_on('python@3.7:3.9')
-    depends_on('cmake@3.5:')
-    depends_on('ncurses+termlib')
-    depends_on('libedit')
-    depends_on('libxml2')
+    depends_on("python@3.7:3.9")
+    depends_on("cmake@3.5:")
+    depends_on("ncurses+termlib")
+    depends_on("libedit")
+    depends_on("libxml2")
 
-    depends_on('py-setuptools')
+    depends_on("py-setuptools")
 
-    depends_on('cuda@8.0:', when="+cuda")
+    depends_on("cuda@8.0:", when="+cuda")
+    depends_on("cudnn", when="+cudnn")
 
-    conflicts('%gcc@:5',
+    conflicts("%gcc@:5",
               msg = "C++14 support is required to build tvm")
 
-    # executables = ['tvmc']
+    conflicts("+cudnn", when="~cuda")
+
+    # executables = ["tvmc"]
 
     def cmake_args(self):
         # Based on https://github.com/apache/tvm/tree/main/conda/recipe/build.sh
@@ -112,17 +119,19 @@ class Tvm(CMakePackage):
         define = self.define
         from_variant = self.define_from_variant
 
-        python = spec['python']
+        python = spec["python"]
         cmake_args = [
         ]
 
         if "+cuda" in spec:
             cmake_args.extend([
                 define("USE_CUDA", spec["cuda"].prefix),
-                define("USE_CUDA", True),
-                define("USE_CUBAS", True),
-                define("USE_CUDNN", True)
+                from_variant("USE_CUBLAS", "cublas"),
             ])
+            if "+cudnn" in spec:
+                cmake_args.extend([
+                    define("USE_CUBLAS", spec["cublas"].prefix),
+                ])
 
         if "+opencl" in spec:
             cmake_args.extend([
@@ -157,8 +166,6 @@ class Tvm(CMakePackage):
             from_variant("USE_LIBBACKTRACE", "libbacktrace"),
             define("INSTALL_DEV", True),
         ])
-        with open("/tmp/cmake.log", "w") as fp:
-            fp.write(str(cmake_args))
         return cmake_args
 
     @run_after("install")
