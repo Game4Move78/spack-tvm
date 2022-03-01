@@ -20,7 +20,7 @@ class Tvm(CMakePackage):
 
     git = "https://github.com/apache/tvm.git"
 
-    version('main', branch='main')
+    version('main', branch='main', submodules=True)
     version('0.8.0', sha256='519fe65d27ca5f67c571ead2f5254d800890dc09baa3cd3a41142166de30a8c7')
     version('0.7.0', sha256='3a9906ac76adc9923b02832c53eea62ebaed0564ff80febff21c71da5a118')
     version('0.6.1', sha256='288d4d4413b4a179f01b86ba3c676840fe1cc472f0581c5489f6ab6736d6e012')
@@ -166,6 +166,7 @@ class Tvm(CMakePackage):
             from_variant("USE_LIBBACKTRACE", "libbacktrace"),
             define("INSTALL_DEV", True),
         ])
+
         return cmake_args
 
     @run_after("install")
